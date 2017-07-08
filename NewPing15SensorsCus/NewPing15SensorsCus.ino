@@ -11,17 +11,25 @@
 // ---------------------------------------------------------------------------
 #include <NewPing.h>
 
-#define SONAR_NUM     2 // Number of sensors.
-#define MAX_DISTANCE 200 // Maximum distance (in cm) to ping.
-#define PING_INTERVAL 33 // Milliseconds between sensor pings (29ms is about the min to avoid cross-sensor echo).
+#define SONAR_NUM     3 // Number of sensors.
+#define MAX_DISTANCE 20 // Maximum distance (in cm) to ping.
+#define PING_INTERVAL 2000 // Milliseconds between sensor pings (29ms is about the min to avoid cross-sensor echo).
 
 unsigned long pingTimer[SONAR_NUM]; // Holds the times when the next ping should happen for each sensor.
 unsigned int cm[SONAR_NUM];         // Where the ping distances are stored.
 uint8_t currentSensor = 0;          // Keeps track of which sensor is active.
+const int ledG1 =6;
+const int ledR1 =7;
+const int ledG2 =5;
+const int ledR2 =11;
+
+int lenR10m,lenR30m,lenR40m;
+
 
 NewPing sonar[SONAR_NUM] = {     // Sensor object array.
   NewPing(2, 8, MAX_DISTANCE), // Each sensor's trigger pin, echo pin, and max distance to ping.
-  NewPing(3, 9, MAX_DISTANCE)
+  NewPing(3, 9, MAX_DISTANCE),
+  NewPing(4, 10, MAX_DISTANCE)
 };
 
 void setup() {
@@ -29,6 +37,7 @@ void setup() {
   pingTimer[0] = millis() + 75;           // First ping starts at 75ms, gives time for the Arduino to chill before starting.
   for (uint8_t i = 1; i < SONAR_NUM; i++) // Set the starting time for each sensor.
     pingTimer[i] = pingTimer[i - 1] + PING_INTERVAL;
+
 }
 
 void loop() {
@@ -57,11 +66,131 @@ void oneSensorCycle() { // Sensor ping cycle complete, do something with the res
     Serial.print("=");
     Serial.print(cm[i]);
     Serial.print("cm ");
-
-
+    //delay(800);
   }
-      Serial.print(3);
-    Serial.print("=");
-    Serial.print(cm[0]);
-  Serial.println();
+          
+    Serial.println();
+    
+    digitalWrite(ledR1, HIGH);
+    digitalWrite(ledR2, HIGH);
+
+    // ***** Road 01 ***** //
+      
+      if((cm[0]<10) && (cm[0]>2)){
+       Serial.println("traffic length = 10 m");
+       lenR10m = 10;
+        Serial.println();
+
+        
+        //Green
+        delay(2000);
+        digitalWrite(ledR1, LOW);
+        delay(3000);
+        digitalWrite(ledG1, HIGH);
+        delay(7000);
+        digitalWrite(ledG1, LOW);
+
+        //Red
+        delay(1000);
+        digitalWrite(ledR1, HIGH);
+        //delay(20000);       
+        
+          
+      }else{
+        Serial.println("No traffic length ");
+        Serial.println();
+        
+        }
+
+       if((cm[1]<10) && (cm[1]>2)){
+       Serial.println("traffic length = 40 m");
+       lenR40m = 40;
+        Serial.println();
+
+        
+        //Green
+        delay(2000);
+        digitalWrite(ledR1, LOW);
+        delay(3000);
+        digitalWrite(ledG1, HIGH);
+        delay(14000);
+        digitalWrite(ledG1, LOW);
+
+        //Red
+        delay(1000);
+        digitalWrite(ledR1, HIGH);
+        //delay(20000);       
+        
+          
+      }else{
+        Serial.println("No traffic length ");
+        Serial.println();
+        
+        }    
+      // End of road 01
+
+     // **** Road 02 ****** //
+
+      if((cm[2]<10) && (cm[2]>2)){
+       Serial.println("traffic length = 30 m");
+       lenR30m = 30;
+        Serial.println();
+
+        if((lenR30m>lenR10m) && (lenR30m<lenR40m)){
+        Serial.println("Testing");
+        Serial.println( lenR40m);  
+
+       delay(2000);
+        digitalWrite(ledR1, HIGH);  
+           
+           //Green
+        
+        digitalWrite(ledR2, LOW);
+        delay(3000);
+        digitalWrite(ledG2, HIGH);
+        delay(9000);
+        digitalWrite(ledG2, LOW);
+
+        //Red
+        delay(1000);
+        digitalWrite(ledR2, HIGH);
+        //delay(20000);   
+          
+          }   
+        
+          
+      }else{
+        Serial.println("No traffic length ");
+        Serial.println();
+        
+        }
+
+       if((cm[1]<10) && (cm[1]>2)){
+       Serial.println("traffic length = 40 m");
+        Serial.println();
+
+        
+        //Green
+        delay(2000);
+        digitalWrite(ledR1, LOW);
+        delay(3000);
+        digitalWrite(ledG1, HIGH);
+        delay(14000);
+        digitalWrite(ledG1, LOW);
+
+        //Red
+        delay(1000);
+        digitalWrite(ledR1, HIGH);
+        //delay(20000);       
+        
+          
+      }else{
+        Serial.println("No traffic length ");
+        Serial.println();
+        
+        }
+
+       // End of Road 02
+
+      
 }
